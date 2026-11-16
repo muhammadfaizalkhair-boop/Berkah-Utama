@@ -208,10 +208,10 @@
             let address = document.getElementById('buyerAddress').value;
 
             let pesan = `Halo Admin, saya ingin memesan sembako dari *Toko Berkah Utama*:\n\n`;
-            pesan += `👤 *Nama:* ${name}\n`;
-            pesan += `📞 *No. WhatsApp:* ${phone}\n`;
-            pesan += `📍 *Alamat:* ${address}\n\n`;
-            pesan += `🛒 *Daftar Belanjaan:*\n`;
+            pesan += `\u{1F464} *Nama:* ${name}\n`;
+            pesan += `\u{1F4DE} *No. WhatsApp:* ${phone}\n`;
+            pesan += `\u{1F4CD} *Alamat:* ${address}\n\n`;
+            pesan += `\u{1F6D2} *Daftar Belanjaan:*\n`;
 
             let totalPrice = 0;
             keranjang.forEach(item => {
@@ -220,7 +220,7 @@
                 pesan += `- ${item.nama} (${item.jumlah} ${item.satuan}) = Rp ${subtotal.toLocaleString('id-ID')}\n`;
             });
 
-            pesan += `\n💰 *Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
+            pesan += `\n\u{1F4B0} *Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
 
             let encodedMessage = encodeURIComponent(pesan);
             // Ganti nomor WhatsApp tujuan di bawah dengan nomor aslimu (format 62...)
