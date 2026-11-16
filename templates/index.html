@@ -18,9 +18,9 @@
         .btn-lacak { background-color: #f0fdfa; color: #0d9488; font-weight: 600; border-radius: 50px; padding: 8px 20px; border: 1px solid #99f6e4; transition: 0.3s; }
         .btn-lacak:hover { background-color: #ccfbf1; color: #0f766e; }
 
-        /* Hero Banner Bergambar Modern */
+        /* Hero Banner Modern */
         .hero-banner {
-            background: linear-gradient(120deg, rgba(15, 23, 42, 0.85) 0%, rgba(13, 148, 136, 0.82) 100%),
+            background: linear-gradient(120deg, rgba(15, 23, 42, 0.86) 0%, rgba(13, 148, 136, 0.84) 100%),
                         url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
             padding: 95px 0 110px 0;
             color: white;
@@ -41,17 +41,15 @@
         .filter-pill { border: 1px solid #e2e8f0; background: white; color: #475569; border-radius: 50px; padding: 7px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .filter-pill:hover, .filter-pill.active { background-color: #0d9488; color: white; border-color: #0d9488; }
 
-        /* Kartu Produk Bergambar */
-        .product-card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; transition: 0.3s; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-card:hover { transform: translateY(-6px); box-shadow: 0 18px 35px rgba(13, 148, 136, 0.14); border-color: #99f6e4; }
-        .product-img-wrap { position: relative; width: 100%; height: 185px; background-color: #f1f5f9; overflow: hidden; }
-        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .product-card:hover .product-img-wrap img { transform: scale(1.07); }
-        .category-tag { position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(4px); color: white; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 50px; }
-        .stock-tag { position: absolute; bottom: 10px; right: 10px; background: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .product-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-name { font-weight: 700; font-size: 1.05rem; color: #1e293b; margin-bottom: 6px; }
-        .product-price { font-weight: 800; font-size: 1.25rem; color: #0d9488; margin-bottom: 14px; }
+        /* Kartu Produk Clean & Modern Tanpa Foto */
+        .product-card { background: white; border-radius: 18px; padding: 22px; box-shadow: 0 4px 18px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; border-top: 4px solid #0d9488; transition: 0.3s; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 18px 35px rgba(13, 148, 136, 0.14); border-color: #0d9488; }
+        .card-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .product-cat-pill { background-color: #f0fdfa; color: #0f766e; font-size: 0.75rem; font-weight: 700; padding: 5px 12px; border-radius: 50px; }
+        .product-icon-circle { width: 42px; height: 42px; border-radius: 12px; background-color: #f8fafc; color: #0d9488; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; border: 1px solid #e2e8f0; }
+        .product-name { font-weight: 700; font-size: 1.1rem; color: #0f172a; margin-bottom: 6px; }
+        .product-price { font-weight: 800; font-size: 1.3rem; color: #0d9488; margin-bottom: 12px; }
+        .stock-badge { background-color: #dcfce7; color: #166534; font-size: 0.76rem; font-weight: 700; padding: 5px 12px; border-radius: 50px; display: inline-block; margin-bottom: 18px; }
         .btn-add { background: linear-gradient(135deg, #0d9488, #0f766e); color: white; border-radius: 50px; font-weight: 600; border: none; padding: 10px; transition: 0.2s; }
         .btn-add:hover { background: linear-gradient(135deg, #0f766e, #115e59); color: white; transform: scale(1.02); }
 
@@ -88,7 +86,7 @@
         </div>
     </nav>
 
-    <!-- Hero Banner Bergambar -->
+    <!-- Hero Banner -->
     <section class="hero-banner">
         <div class="container">
             <div class="row align-items-center">
@@ -142,7 +140,7 @@
         </div>
     </section>
 
-    <!-- Katalog Produk Bergambar & Filter -->
+    <!-- Katalog Produk Clean & Filter -->
     <section id="katalog-produk" class="container" style="margin-top: 55px;">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
             <div>
@@ -171,20 +169,32 @@
             {% for b in barang %}
             <div class="col-lg-3 col-md-4 col-sm-6 product-item-col" data-nama="{{ b.nama_barang|lower }}" data-kategori="{{ b.kategori }}">
                 <div class="product-card">
-                    <div class="product-img-wrap">
-                        <span class="category-tag">{{ b.kategori }}</span>
-                        <img src="" alt="{{ b.nama_barang }}" class="auto-product-img" data-name="{{ b.nama_barang }}" data-cat="{{ b.kategori }}">
-                        <span class="stock-tag"><i class="bi bi-check-circle-fill me-1"></i> Stok: {{ b.stok }} {{ b.satuan }}</span>
-                    </div>
-                    <div class="product-body">
-                        <div>
-                            <h6 class="product-name">{{ b.nama_barang }}</h6>
-                            <div class="product-price">Rp {{ "{:,.0f}".format(b.harga).replace(',', '.') }} <small class="text-muted fw-normal fs-6">/ {{ b.satuan }}</small></div>
+                    <div>
+                        <div class="card-top-row">
+                            <span class="product-cat-pill">{{ b.kategori }}</span>
+                            <div class="product-icon-circle">
+                                {% if b.kategori == 'Minuman' %}
+                                    <i class="bi bi-cup-hot-fill"></i>
+                                {% elif b.kategori == 'Protein' %}
+                                    <i class="bi bi-egg-fried"></i>
+                                {% elif b.kategori == 'Pembersih' %}
+                                    <i class="bi bi-droplet-fill"></i>
+                                {% elif b.kategori == 'Makanan Instan' %}
+                                    <i class="bi bi-box2-heart-fill"></i>
+                                {% elif b.kategori == 'Bumbu Dapur' %}
+                                    <i class="bi bi-fire"></i>
+                                {% else %}
+                                    <i class="bi bi-bag-check-fill"></i>
+                                {% endif %}
+                            </div>
                         </div>
-                        <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}', {{ b.stok }})" class="btn btn-add w-100">
-                            <i class="bi bi-cart-plus-fill me-1"></i> Tambah ke Keranjang
-                        </button>
+                        <h6 class="product-name">{{ b.nama_barang }}</h6>
+                        <div class="product-price">Rp {{ "{:,.0f}".format(b.harga).replace(',', '.') }} <small class="text-muted fw-normal fs-6">/ {{ b.satuan }}</small></div>
+                        <span class="stock-badge"><i class="bi bi-check-circle-fill me-1"></i> Stok: {{ b.stok }} {{ b.satuan }}</span>
                     </div>
+                    <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}', {{ b.stok }})" class="btn btn-add w-100">
+                        <i class="bi bi-cart-plus-fill me-1"></i> Tambah ke Keranjang
+                    </button>
                 </div>
             </div>
             {% else %}
@@ -419,47 +429,8 @@
         </div>
     </footer>
 
-    <!-- Skrip Gambar Otomatis, Filter, Keranjang, Checkout, & Lacak -->
+    <!-- Skrip Filter, Keranjang, Checkout, & Lacak -->
     <script>
-        // Pemetaan Foto Produk Otomatis berdasarkan Nama Barang / Kategori
-        function getProductImage(nama, kategori) {
-            const n = nama.toLowerCase();
-            if (n.includes('beras')) return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('minyak')) return 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('gula')) return 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('telur')) return 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('tepung')) return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('indomie') || n.includes('mie')) return 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('susu')) return 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('kopi')) return 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('teh')) return 'https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('garam')) return 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('margarin') || n.includes('mentega')) return 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('kecap')) return 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('saus') || n.includes('sambal')) return 'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('sarden') || n.includes('ikan')) return 'https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=600&q=80';
-            if (n.includes('sabun') || n.includes('sunlight') || n.includes('cuci')) return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80';
-
-            // Fallback berdasarkan kategori
-            const k = (kategori || '').toLowerCase();
-            if (k.includes('minuman')) return 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=80';
-            if (k.includes('bumbu')) return 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80';
-            if (k.includes('pembersih')) return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80';
-            return 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.auto-product-img').forEach(img => {
-                const nama = img.getAttribute('data-name');
-                const cat = img.getAttribute('data-cat');
-                img.src = getProductImage(nama, cat);
-                img.onerror = function() {
-                    this.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
-                };
-            });
-        });
-
-        // Filter Pencarian & Kategori
         let selectedKategori = 'ALL';
         function setKategori(kat, btn) {
             selectedKategori = kat;
@@ -490,7 +461,6 @@
             toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2500);
         }
 
-        // Tampilkan pilihan Bank / E-Wallet sesuai metode yang dipilih
         document.getElementById('paymentMethod').addEventListener('change', function() {
             const val = this.value;
             document.getElementById('custBoxTransfer').style.display = (val === 'Transfer Bank') ? 'block' : 'none';
