@@ -208,23 +208,19 @@
             let address = document.getElementById('buyerAddress').value;
 
             let pesan = `Halo Admin, saya ingin memesan sembako dari *Toko Berkah Utama*:\n\n`;
-            pesan += `${String.fromCodePoint(0x1F464)} *Nama:* ${name}\n`;
-            pesan += `${String.fromCodePoint(0x1F4DE)} *No. WhatsApp:* ${phone}\n`;
-            pesan += `${String.fromCodePoint(0x1F4CD)} *Alamat:* ${address}\n\n`;
-            pesan += `${String.fromCodePoint(0x1F6D2)} *Daftar Belanjaan:*\n`;
+            pesan += `- *Nama:* ${name}\n`;
+            pesan += `- *No. WhatsApp:* ${phone}\n`;
+            pesan += `- *Alamat:* ${address}\n\n`;
+            pesan += `*Daftar Belanjaan:*\n`;
 
             let totalPrice = 0;
             keranjang.forEach(item => {
                 let subtotal = item.harga * item.jumlah;
                 totalPrice += subtotal;
-                pesan += `- ${item.nama} (${item.jumlah} ${item.satuan}) = Rp ${subtotal.toLocaleString('id-ID')}\n`;
+                pesan += `  * ${item.nama} (${item.jumlah} ${item.satuan}) = Rp ${subtotal.toLocaleString('id-ID')}\n`;
             });
 
-            pesan += `\n${String.fromCodePoint(0x1F4B0)} *Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
-
-            let encodedMessage = encodeURIComponent(pesan);
-            let noWaToko = '6285111327042';
-            window.open(`https://api.whatsapp.com/send?phone=${noWaToko}&text=${encodedMessage}`, '_blank');
+            pesan += `\n*Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
             let encodedMessage = encodeURIComponent(pesan);
             // Ganti nomor WhatsApp tujuan di bawah dengan nomor aslimu (format 62...)
             let noWaToko = '6285111327042'; 
