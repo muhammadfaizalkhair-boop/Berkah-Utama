@@ -15,6 +15,8 @@
         .brand-text { font-weight: 800; font-size: 1.5rem; color: #0d9488; text-decoration: none; }
         .btn-login { background-color: #f1f5f9; color: #475569; font-weight: 600; border-radius: 50px; padding: 8px 20px; border: none; text-decoration: none; transition: 0.3s; }
         .btn-login:hover { background-color: #e2e8f0; color: #0f172a; }
+        .btn-lacak { background-color: #f0fdfa; color: #0d9488; font-weight: 600; border-radius: 50px; padding: 8px 20px; border: 1px solid #99f6e4; transition: 0.3s; }
+        .btn-lacak:hover { background-color: #ccfbf1; color: #0f766e; }
 
         /* Hero Section */
         .hero-section { background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); padding: 80px 0; border-bottom: 1px solid #99f6e4; text-align: center; }
@@ -45,6 +47,9 @@
         <div class="container">
             <a class="brand-text" href="/"><i class="bi bi-shop me-2"></i>Toko Berkah Utama</a>
             <div class="ms-auto d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-lacak" data-bs-toggle="modal" data-bs-target="#modalLacak">
+                    <i class="bi bi-search me-1"></i> Lacak Pesanan
+                </button>
                 <a href="/login" class="btn btn-login"><i class="bi bi-person-lock me-1"></i> Login Admin</a>
             </div>
         </div>
@@ -72,7 +77,7 @@
                         <div class="product-price">Rp {{ "{:,.0f}".format(b.harga).replace(',', '.') }}</div>
                         <span class="badge-stock"><i class="bi bi-check-circle-fill me-1"></i> Stok: {{ b.stok }} {{ b.satuan }}</span>
                     </div>
-                    <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}')" class="btn btn-add w-100">
+                    <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}', {{ b.stok }})" class="btn btn-add w-100">
                         <i class="bi bi-cart-plus-fill me-1"></i> Pilih Produk
                     </button>
                 </div>
@@ -107,7 +112,7 @@
                         <span id="cartTotalPrice" style="color: #0d9488;">Rp 0</span>
                     </div>
 
-                    <!-- Form Data Pembeli untuk Checkout WhatsApp -->
+                    <!-- Form Data Pembeli untuk Checkout Otomatis -->
                     <form id="checkoutForm" onsubmit="prosesCheckout(event)">
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-secondary">Nama Lengkap Penerima</label>
@@ -117,14 +122,78 @@
                             <label class="form-label small fw-bold text-secondary">Nomor WhatsApp Aktif</label>
                             <input type="text" id="buyerPhone" class="form-control bg-light" placeholder="Cth: 081234567890" required>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label small fw-bold text-secondary">Alamat Pengiriman Lengkap</label>
                             <textarea id="buyerAddress" class="form-control bg-light" rows="2" placeholder="Cth: Jl. Jamin Ginting No. 10, Tuntungan" required></textarea>
                         </div>
-                        <button type="submit" class="btn w-100 text-white fw-bold py-2 rounded-pill" style="background-color: #25d366;">
-                            <i class="bi bi-whatsapp me-1"></i> Checkout & Kirim Pesanan via WhatsApp
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary">Metode Pembayaran</label>
+                            <select id="paymentMethod" class="form-select bg-light" required>
+                                <option value="QRIS (Scan Barcode)">QRIS (Scan Barcode Instan)</option>
+                                <option value="Transfer Bank (BSI / BRI)">Transfer Bank (BSI / BRI)</option>
+                                <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat saat Barang Sampai)</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="btnSubmitCheckout" class="btn w-100 text-white fw-bold py-2 rounded-pill" style="background-color: #0d9488;">
+                            <i class="bi bi-bag-check-fill me-1"></i> Buat Pesanan Sekarang
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pop-Up Pembayaran & Barcode QRIS Customer -->
+    <div class="modal fade" id="modalPembayaran" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header text-white" style="background-color: #0d9488;">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-qr-code-scan me-2"></i> Instruksi Pembayaran</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill mb-2" id="payStatusBadge">Status: Menunggu Pembayaran</span>
+                    <p class="text-muted small mb-1">Nomor Pesanan Anda:</p>
+                    <h4 class="fw-bold text-dark mb-3" id="payKodeTrx">TRX-000</h4>
+
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <small class="text-muted d-block">Total Nominal yang Harus Dibayar:</small>
+                        <h3 class="fw-extrabold mb-0" style="color: #0d9488;" id="payTotalNominal">Rp 0</h3>
+                    </div>
+
+                    <!-- Area Tampilan QRIS / Rekening Dinamis -->
+                    <div id="payInstructionBox" class="p-3 border rounded-3 mb-4 bg-white">
+                        <!-- Diisi otomatis via JavaScript -->
+                    </div>
+
+                    <button type="button" id="btnKonfirmasiWA" class="btn w-100 text-white fw-bold py-2 rounded-pill mb-2" style="background-color: #25d366;">
+                        <i class="bi bi-whatsapp me-1"></i> Konfirmasi Pembayaran ke WhatsApp Admin
+                    </button>
+                    <button type="button" class="btn btn-light w-100 rounded-pill small text-muted" data-bs-dismiss="modal">
+                        Tutup & Cek Nanti di Menu Lacak Pesanan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lacak Status Pesanan Customer -->
+    <div class="modal fade" id="modalLacak" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-truck me-2" style="color: #0d9488;"></i> Lacak Status Pesanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form onsubmit="cariPesanan(event)" class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Masukkan Nomor Pesanan atau No. WhatsApp</label>
+                        <div class="input-group">
+                            <input type="text" id="inputKodeLacak" class="form-control bg-light" placeholder="Cth: TRX-001 atau 081234567890" required>
+                            <button type="submit" class="btn text-white fw-bold" style="background-color: #0d9488;">Cek Status</button>
+                        </div>
+                    </form>
+                    <div id="hasilLacakBox"></div>
                 </div>
             </div>
         </div>
@@ -138,19 +207,37 @@
         </div>
     </footer>
 
-    <!-- Skrip Keranjang Belanja & Checkout -->
+    <!-- Skrip Keranjang Belanja, Checkout Otomatis, & Lacak Pesanan -->
     <script>
         let keranjang = [];
 
-        function tambahKeKeranjang(nama, harga, satuan) {
+        function tambahKeKeranjang(nama, harga, satuan, maxStok) {
             let item = keranjang.find(p => p.nama === nama);
             if (item) {
-                item.jumlah += 1;
+                if (item.jumlah < maxStok) {
+                    item.jumlah += 1;
+                } else {
+                    alert('Maaf, jumlah sudah mencapai batas stok tersedia (' + maxStok + ' ' + satuan + ').');
+                    return;
+                }
             } else {
-                keranjang.push({ nama: nama, harga: harga, satuan: satuan, jumlah: 1 });
+                keranjang.push({ nama: nama, harga: harga, satuan: satuan, jumlah: 1, maxStok: maxStok });
             }
             updateCartUI();
             alert(nama + ' berhasil ditambahkan ke keranjang!');
+        }
+
+        function ubahJumlah(index, delta) {
+            let item = keranjang[index];
+            let baru = item.jumlah + delta;
+            if (baru <= 0) {
+                keranjang.splice(index, 1);
+            } else if (baru <= item.maxStok) {
+                item.jumlah = baru;
+            } else {
+                alert('Stok maksimal hanya ' + item.maxStok + ' ' + item.satuan);
+            }
+            updateCartUI();
         }
 
         function updateCartUI() {
@@ -177,11 +264,15 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
                         <div>
                             <h6 class="mb-0 fw-bold small">${item.nama}</h6>
-                            <small class="text-muted">${item.jumlah} ${item.satuan} x Rp ${item.harga.toLocaleString('id-ID')}</small>
+                            <small class="text-muted">Rp ${item.harga.toLocaleString('id-ID')} / ${item.satuan}</small>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="fw-bold text-success small">Rp ${subtotal.toLocaleString('id-ID')}</span>
-                            <button type="button" class="btn btn-sm text-danger p-0" onclick="hapusItem(${index})"><i class="bi bi-trash-fill"></i></button>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-secondary px-2" onclick="ubahJumlah(${index}, -1)">-</button>
+                                <span class="btn btn-light disabled fw-bold text-dark px-2">${item.jumlah}</span>
+                                <button type="button" class="btn btn-outline-secondary px-2" onclick="ubahJumlah(${index}, 1)">+</button>
+                            </div>
+                            <span class="fw-bold text-success small ms-1">Rp ${subtotal.toLocaleString('id-ID')}</span>
                         </div>
                     </li>
                 `;
@@ -191,40 +282,163 @@
             totalEl.textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
         }
 
-        function hapusItem(index) {
-            keranjang.splice(index, 1);
-            updateCartUI();
-        }
-
-        function prosesCheckout(event) {
+        async function prosesCheckout(event) {
             event.preventDefault();
             if (keranjang.length === 0) {
                 alert('Keranjang belanja masih kosong!');
                 return;
             }
 
+            let btnSubmit = document.getElementById('btnSubmitCheckout');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Menyimpan Pesanan...';
+
             let name = document.getElementById('buyerName').value;
             let phone = document.getElementById('buyerPhone').value;
             let address = document.getElementById('buyerAddress').value;
+            let metode = document.getElementById('paymentMethod').value;
+            let totalPrice = keranjang.reduce((sum, item) => sum + (item.harga * item.jumlah), 0);
+            let snapshotKeranjang = [...keranjang];
 
-            let pesan = `Halo Admin, saya ingin memesan sembako dari *Toko Berkah Utama*:\n\n`;
-            pesan += `- *Nama:* ${name}\n`;
-            pesan += `- *No. WhatsApp:* ${phone}\n`;
-            pesan += `- *Alamat:* ${address}\n\n`;
-            pesan += `*Daftar Belanjaan:*\n`;
+            try {
+                let response = await fetch('/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nama: name,
+                        phone: phone,
+                        alamat: address,
+                        metode: metode,
+                        items: snapshotKeranjang,
+                        total: totalPrice
+                    })
+                });
 
-            let totalPrice = 0;
-            keranjang.forEach(item => {
-                let subtotal = item.harga * item.jumlah;
-                totalPrice += subtotal;
-                pesan += `  * ${item.nama} (${item.jumlah} ${item.satuan}) = Rp ${subtotal.toLocaleString('id-ID')}\n`;
-            });
+                let result = await response.json();
+                if (!response.ok || result.status !== 'success') {
+                    throw new Error(result.message || 'Gagal menyimpan pesanan');
+                }
 
-            pesan += `\n*Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
-            let encodedMessage = encodeURIComponent(pesan);
-            // Ganti nomor WhatsApp tujuan di bawah dengan nomor aslimu (format 62...)
-            let noWaToko = '6285111327042'; 
-            window.open(`https://wa.me/${noWaToko}?text=${encodedMessage}`, '_blank');
+                let kodeTrx = result.kode_trx;
+                let statusPesanan = result.status_pesanan;
+
+                // Tutup modal keranjang
+                let modalKeranjangEl = document.getElementById('modalKeranjang');
+                let modalKeranjang = bootstrap.Modal.getInstance(modalKeranjangEl);
+                if (modalKeranjang) modalKeranjang.hide();
+
+                // Siapkan Modal Pembayaran & Barcode QRIS
+                document.getElementById('payKodeTrx').textContent = kodeTrx;
+                document.getElementById('payTotalNominal').textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
+                document.getElementById('payStatusBadge').textContent = 'Status: ' + statusPesanan;
+
+                let instructionBox = document.getElementById('payInstructionBox');
+                if (metode.includes('QRIS')) {
+                    let qrData = encodeURIComponent(`QRIS-TOKO-BERKAH-UTAMA|${kodeTrx}|RP${totalPrice}`);
+                    instructionBox.innerHTML = `
+                        <p class="fw-bold small text-dark mb-2">Silakan Scan Barcode QRIS di Bawah Ini:</p>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}" alt="Barcode QRIS Toko Berkah Utama" class="img-fluid rounded border p-2 mb-2" style="width: 200px; height: 200px;">
+                        <p class="text-muted small mb-0">Mendukung GoPay, DANA, OVO, ShopeePay, dan semua Mobile Banking.</p>
+                    `;
+                } else if (metode.includes('Transfer')) {
+                    instructionBox.innerHTML = `
+                        <p class="fw-bold small text-dark mb-2">Silakan Transfer ke Salah Satu Rekening Toko:</p>
+                        <div class="p-2 bg-light rounded mb-2">
+                            <span class="fw-bold text-primary d-block">Bank BSI: 7192837465</span>
+                            <small class="text-muted">a.n. Toko Berkah Utama</small>
+                        </div>
+                        <div class="p-2 bg-light rounded">
+                            <span class="fw-bold text-primary d-block">Bank BRI: 005301029384502</span>
+                            <small class="text-muted">a.n. Toko Berkah Utama</small>
+                        </div>
+                    `;
+                } else {
+                    instructionBox.innerHTML = `
+                        <p class="fw-bold text-success mb-1"><i class="bi bi-cash-coin me-1"></i> Pembayaran COD (Bayar di Tempat)</p>
+                        <p class="text-muted small mb-0">Pesanan Anda langsung masuk antrean pengantaran. Siapkan uang pas sejumlah <strong>Rp ${totalPrice.toLocaleString('id-ID')}</strong> saat kurir tiba.</p>
+                    `;
+                }
+
+                // Susun pesan WhatsApp bersih tanpa emoji
+                let pesan = `Halo Admin Toko Berkah Utama, saya ingin konfirmasi pesanan:\n\n`;
+                pesan += `- *No. Pesanan:* ${kodeTrx}\n`;
+                pesan += `- *Nama:* ${name}\n`;
+                pesan += `- *No. WhatsApp:* ${phone}\n`;
+                pesan += `- *Alamat:* ${address}\n`;
+                pesan += `- *Metode Bayar:* ${metode}\n\n`;
+                pesan += `*Daftar Belanjaan:*\n`;
+
+                snapshotKeranjang.forEach(item => {
+                    let subtotal = item.harga * item.jumlah;
+                    pesan += `  * ${item.nama} (${item.jumlah} ${item.satuan}) = Rp ${subtotal.toLocaleString('id-ID')}\n`;
+                });
+
+                pesan += `\n*Total Pembayaran:* *Rp ${totalPrice.toLocaleString('id-ID')}*\n\nMohon segera diproses ya min, terima kasih!`;
+                let encodedMessage = encodeURIComponent(pesan);
+                let noWaToko = '6285111327042';
+
+                document.getElementById('btnKonfirmasiWA').onclick = function() {
+                    window.open(`https://api.whatsapp.com/send?phone=${noWaToko}&text=${encodedMessage}`, '_blank');
+                };
+
+                // Kosongkan keranjang & tampilkan Modal Pembayaran
+                keranjang = [];
+                updateCartUI();
+                document.getElementById('checkoutForm').reset();
+
+                let modalBayar = new bootstrap.Modal(document.getElementById('modalPembayaran'));
+                modalBayar.show();
+
+            } catch (error) {
+                alert('Terjadi kesalahan: ' + error.message);
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="bi bi-bag-check-fill me-1"></i> Buat Pesanan Sekarang';
+            }
+        }
+
+        async function cariPesanan(event) {
+            event.preventDefault();
+            let kode = document.getElementById('inputKodeLacak').value.trim();
+            let box = document.getElementById('hasilLacakBox');
+            box.innerHTML = '<p class="text-center text-muted small">Mencari data pesanan...</p>';
+
+            try {
+                let res = await fetch('/api/lacak/' + encodeURIComponent(kode));
+                let data = await res.json();
+
+                if (!res.ok || data.status !== 'success') {
+                    box.innerHTML = `<div class="alert alert-danger small mb-0">${data.message}</div>`;
+                    return;
+                }
+
+                let badgeColor = 'bg-warning text-dark';
+                if (data.status_pesanan === 'Pesanan Diproses') badgeColor = 'bg-info text-dark';
+                if (data.status_pesanan === 'Pesanan Berhasil') badgeColor = 'bg-success text-white';
+
+                let itemsHtml = data.items.map(i => `<li class="small">${i}</li>`).join('');
+
+                box.innerHTML = `
+                    <div class="p-3 bg-light rounded-3 border">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-dark">${data.kode_trx}</span>
+                            <span class="badge ${badgeColor} px-2 py-1">${data.status_pesanan}</span>
+                        </div>
+                        <p class="small mb-1"><strong>Pemesan:</strong> ${data.nama_pembeli}</p>
+                        <p class="small mb-1"><strong>Alamat:</strong> ${data.alamat_pembeli}</p>
+                        <p class="small mb-2"><strong>Metode Bayar:</strong> ${data.metode_pembayaran}</p>
+                        <hr class="my-2">
+                        <p class="small fw-bold mb-1">Rincian Belanja:</p>
+                        <ul class="ps-3 mb-2">${itemsHtml}</ul>
+                        <div class="d-flex justify-content-between fw-bold text-success border-top pt-2">
+                            <span>Total Tagihan:</span>
+                            <span>Rp ${Number(data.total_harga).toLocaleString('id-ID')}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                box.innerHTML = '<div class="alert alert-danger small mb-0">Gagal terhubung ke server.</div>';
+            }
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
