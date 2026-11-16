@@ -33,6 +33,10 @@
         .btn-add { background-color: #0d9488; color: white; border-radius: 50px; font-weight: 600; border: none; padding: 8px; transition: 0.2s; }
         .btn-add:hover { background-color: #0f766e; color: white; }
 
+        /* Kartu Pilihan Bank & E-Wallet (Sama seperti Kasir Admin) */
+        .bank-label, .wallet-label { border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: 0.2s; background: white; padding: 10px 4px; text-align: center; height: 100%; }
+        .btn-check:checked + .bank-label, .btn-check:checked + .wallet-label { border-color: #0d9488; background-color: #f0fdfa; transform: scale(1.03); box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15); }
+
         /* Floating Cart Button */
         .floating-cart { position: fixed; bottom: 30px; right: 30px; background-color: #0d9488; color: white; border-radius: 50px; padding: 12px 25px; box-shadow: 0 10px 25px rgba(13, 148, 136, 0.4); z-index: 1000; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; border: none; transition: 0.3s; }
         .floating-cart:hover { background-color: #0f766e; transform: scale(1.05); }
@@ -126,15 +130,108 @@
                             <label class="form-label small fw-bold text-secondary">Alamat Pengiriman Lengkap</label>
                             <textarea id="buyerAddress" class="form-control bg-light" rows="2" placeholder="Cth: Jl. Jamin Ginting No. 10, Tuntungan" required></textarea>
                         </div>
-                        <div class="mb-4">
+                        <div class="mb-3">
                             <label class="form-label small fw-bold text-secondary">Metode Pembayaran</label>
                             <select id="paymentMethod" class="form-select bg-light" required>
-                                <option value="QRIS (Scan Barcode)">QRIS (Scan Barcode Instan)</option>
-                                <option value="Transfer Bank (BSI / BRI)">Transfer Bank (BSI / BRI)</option>
-                                <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat saat Barang Sampai)</option>
+                                <option value="QRIS">QRIS (Scan Barcode Instan)</option>
+                                <option value="Transfer Bank">Transfer Bank</option>
+                                <option value="E-Wallet">E-Wallet</option>
+                                <option value="COD">COD (Bayar di Tempat saat Barang Sampai)</option>
                             </select>
                         </div>
-                        <button type="submit" id="btnSubmitCheckout" class="btn w-100 text-white fw-bold py-2 rounded-pill" style="background-color: #0d9488;">
+
+                        <!-- Box Pilihan Transfer Bank (Lengkap seperti Admin) -->
+                        <div id="custBoxTransfer" class="mb-4" style="display: none;">
+                            <label class="fw-bold mb-2 text-secondary small">Pilih Tujuan Bank:</label>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankBCA" value="BCA">
+                                    <label class="bank-label d-block" for="custBankBCA">
+                                        <i class="bi bi-bank fs-4" style="color: #0066ae;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">BCA</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankBRI" value="BRI">
+                                    <label class="bank-label d-block" for="custBankBRI">
+                                        <i class="bi bi-bank fs-4" style="color: #00529c;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">BRI</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankMandiri" value="Mandiri">
+                                    <label class="bank-label d-block" for="custBankMandiri">
+                                        <i class="bi bi-bank fs-4" style="color: #003399;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">Mandiri</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankBNI" value="BNI">
+                                    <label class="bank-label d-block" for="custBankBNI">
+                                        <i class="bi bi-bank fs-4" style="color: #f15a24;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">BNI</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankBSI" value="BSI">
+                                    <label class="bank-label d-block" for="custBankBSI">
+                                        <i class="bi bi-bank fs-4" style="color: #00a39d;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">BSI</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custBankPermata" value="Permata">
+                                    <label class="bank-label d-block" for="custBankPermata">
+                                        <i class="bi bi-bank fs-4" style="color: #002b49;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">Permata</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Box Pilihan E-Wallet (Lengkap seperti Admin) -->
+                        <div id="custBoxWallet" class="mb-4" style="display: none;">
+                            <label class="fw-bold mb-2 text-secondary small">Pilih E-Wallet:</label>
+                            <div class="row g-2 justify-content-center">
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custWalletDana" value="DANA">
+                                    <label class="wallet-label d-block" for="custWalletDana">
+                                        <i class="bi bi-wallet2 fs-4" style="color: #118eea;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">DANA</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custWalletOvo" value="OVO">
+                                    <label class="wallet-label d-block" for="custWalletOvo">
+                                        <i class="bi bi-wallet2 fs-4" style="color: #4c2882;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">OVO</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custWalletGopay" value="GoPay">
+                                    <label class="wallet-label d-block" for="custWalletGopay">
+                                        <i class="bi bi-wallet2 fs-4" style="color: #00816a;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">GoPay</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custWalletShopee" value="ShopeePay">
+                                    <label class="wallet-label d-block" for="custWalletShopee">
+                                        <i class="bi bi-wallet2 fs-4" style="color: #ee4d2d;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">ShopeePay</div>
+                                    </label>
+                                </div>
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="cust_channel" id="custWalletLinkAja" value="LinkAja">
+                                    <label class="wallet-label d-block" for="custWalletLinkAja">
+                                        <i class="bi bi-wallet2 fs-4" style="color: #ed1c24;"></i>
+                                        <div class="fw-bold text-dark mt-1" style="font-size: 12px;">LinkAja</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnSubmitCheckout" class="btn w-100 text-white fw-bold py-2 rounded-pill mt-2" style="background-color: #0d9488;">
                             <i class="bi bi-bag-check-fill me-1"></i> Buat Pesanan Sekarang
                         </button>
                     </form>
@@ -161,7 +258,7 @@
                         <h3 class="fw-extrabold mb-0" style="color: #0d9488;" id="payTotalNominal">Rp 0</h3>
                     </div>
 
-                    <!-- Area Tampilan QRIS / Rekening Dinamis -->
+                    <!-- Area Tampilan QRIS / Rekening / E-Wallet Dinamis -->
                     <div id="payInstructionBox" class="p-3 border rounded-3 mb-4 bg-white">
                         <!-- Diisi otomatis via JavaScript -->
                     </div>
@@ -210,6 +307,16 @@
     <!-- Skrip Keranjang Belanja, Checkout Otomatis, & Lacak Pesanan -->
     <script>
         let keranjang = [];
+
+        // Tampilkan pilihan Bank / E-Wallet sesuai metode yang dipilih
+        document.getElementById('paymentMethod').addEventListener('change', function() {
+            const val = this.value;
+            document.getElementById('custBoxTransfer').style.display = (val === 'Transfer Bank') ? 'block' : 'none';
+            document.getElementById('custBoxWallet').style.display = (val === 'E-Wallet') ? 'block' : 'none';
+
+            // Reset radio pilihan saat ganti kategori utama
+            document.querySelectorAll('input[name="cust_channel"]').forEach(r => r.checked = false);
+        });
 
         function tambahKeKeranjang(nama, harga, satuan, maxStok) {
             let item = keranjang.find(p => p.nama === nama);
@@ -289,6 +396,23 @@
                 return;
             }
 
+            let metodeUtama = document.getElementById('paymentMethod').value;
+            let selectedChannel = document.querySelector('input[name="cust_channel"]:checked');
+
+            if ((metodeUtama === 'Transfer Bank' || metodeUtama === 'E-Wallet') && !selectedChannel) {
+                alert('Silakan pilih tujuan ' + metodeUtama + ' terlebih dahulu!');
+                return;
+            }
+
+            let metodeFinal = metodeUtama;
+            if (metodeUtama === 'Transfer Bank') {
+                metodeFinal = `Transfer Bank (${selectedChannel.value})`;
+            } else if (metodeUtama === 'E-Wallet') {
+                metodeFinal = `E-Wallet (${selectedChannel.value})`;
+            } else if (metodeUtama === 'COD') {
+                metodeFinal = 'COD (Bayar di Tempat)';
+            }
+
             let btnSubmit = document.getElementById('btnSubmitCheckout');
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = 'Menyimpan Pesanan...';
@@ -296,7 +420,6 @@
             let name = document.getElementById('buyerName').value;
             let phone = document.getElementById('buyerPhone').value;
             let address = document.getElementById('buyerAddress').value;
-            let metode = document.getElementById('paymentMethod').value;
             let totalPrice = keranjang.reduce((sum, item) => sum + (item.harga * item.jumlah), 0);
             let snapshotKeranjang = [...keranjang];
 
@@ -308,7 +431,7 @@
                         nama: name,
                         phone: phone,
                         alamat: address,
-                        metode: metode,
+                        metode: metodeFinal,
                         items: snapshotKeranjang,
                         total: totalPrice
                     })
@@ -327,28 +450,45 @@
                 let modalKeranjang = bootstrap.Modal.getInstance(modalKeranjangEl);
                 if (modalKeranjang) modalKeranjang.hide();
 
-                // Siapkan Modal Pembayaran & Barcode QRIS
+                // Siapkan Modal Pembayaran Dinamis
                 document.getElementById('payKodeTrx').textContent = kodeTrx;
                 document.getElementById('payTotalNominal').textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
                 document.getElementById('payStatusBadge').textContent = 'Status: ' + statusPesanan;
 
+                const daftarRekening = {
+                    'BCA': '8291048291 (a.n. Toko Berkah Utama)',
+                    'BRI': '005301029384502 (a.n. Toko Berkah Utama)',
+                    'Mandiri': '1060012839482 (a.n. Toko Berkah Utama)',
+                    'BNI': '0829104829 (a.n. Toko Berkah Utama)',
+                    'BSI': '7192837465 (a.n. Toko Berkah Utama)',
+                    'Permata': '4129384756 (a.n. Toko Berkah Utama)'
+                };
+
                 let instructionBox = document.getElementById('payInstructionBox');
-                if (metode.includes('QRIS')) {
+                if (metodeUtama === 'QRIS') {
                     let qrData = encodeURIComponent(`QRIS-TOKO-BERKAH-UTAMA|${kodeTrx}|RP${totalPrice}`);
                     instructionBox.innerHTML = `
                         <p class="fw-bold small text-dark mb-2">Silakan Scan Barcode QRIS di Bawah Ini:</p>
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${qrData}" alt="Barcode QRIS Toko Berkah Utama" class="img-fluid rounded border p-2 mb-2" style="width: 200px; height: 200px;">
                         <p class="text-muted small mb-0">Mendukung GoPay, DANA, OVO, ShopeePay, dan semua Mobile Banking.</p>
                     `;
-                } else if (metode.includes('Transfer')) {
+                } else if (metodeUtama === 'Transfer Bank') {
+                    let bankName = selectedChannel.value;
+                    let noRek = daftarRekening[bankName] || '7192837465 (a.n. Toko Berkah Utama)';
                     instructionBox.innerHTML = `
-                        <p class="fw-bold small text-dark mb-2">Silakan Transfer ke Salah Satu Rekening Toko:</p>
-                        <div class="p-2 bg-light rounded mb-2">
-                            <span class="fw-bold text-primary d-block">Bank BSI: 7192837465</span>
-                            <small class="text-muted">a.n. Toko Berkah Utama</small>
+                        <p class="fw-bold small text-dark mb-2">Silakan Transfer ke Rekening Tujuan:</p>
+                        <div class="p-3 bg-light rounded border">
+                            <span class="badge bg-primary mb-1">Bank ${bankName}</span>
+                            <div class="fw-bold text-dark fs-6 mt-1">${noRek}</div>
                         </div>
-                        <div class="p-2 bg-light rounded">
-                            <span class="fw-bold text-primary d-block">Bank BRI: 005301029384502</span>
+                    `;
+                } else if (metodeUtama === 'E-Wallet') {
+                    let walletName = selectedChannel.value;
+                    instructionBox.innerHTML = `
+                        <p class="fw-bold small text-dark mb-2">Silakan Transfer ke Akun ${walletName} Toko:</p>
+                        <div class="p-3 bg-light rounded border">
+                            <span class="badge bg-info text-dark mb-1">${walletName}</span>
+                            <div class="fw-bold text-dark fs-5 mt-1">0851-1132-7042</div>
                             <small class="text-muted">a.n. Toko Berkah Utama</small>
                         </div>
                     `;
@@ -365,7 +505,7 @@
                 pesan += `- *Nama:* ${name}\n`;
                 pesan += `- *No. WhatsApp:* ${phone}\n`;
                 pesan += `- *Alamat:* ${address}\n`;
-                pesan += `- *Metode Bayar:* ${metode}\n\n`;
+                pesan += `- *Metode Bayar:* ${metodeFinal}\n\n`;
                 pesan += `*Daftar Belanjaan:*\n`;
 
                 snapshotKeranjang.forEach(item => {
@@ -385,6 +525,8 @@
                 keranjang = [];
                 updateCartUI();
                 document.getElementById('checkoutForm').reset();
+                document.getElementById('custBoxTransfer').style.display = 'none';
+                document.getElementById('custBoxWallet').style.display = 'none';
 
                 let modalBayar = new bootstrap.Modal(document.getElementById('modalPembayaran'));
                 modalBayar.show();
