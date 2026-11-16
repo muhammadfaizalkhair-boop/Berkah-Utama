@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Struk Pembayaran - Toko Berkah Utama</title>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .receipt-card { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 20px; margin-bottom: 20px; }
+        .receipt-font { font-family: 'Courier Prime', monospace; }
+        .btn-action { font-weight: 600; border-radius: 50px; padding: 10px 20px; }
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .receipt-card { box-shadow: none; padding: 0; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="receipt-card">
+        <div class="receipt-header">
+            <h4 class="fw-bold mb-1" style="color: #0d9488;"><i class="bi bi-shop"></i> TOKO BERKAH UTAMA</h4>
+            <p class="text-muted small mb-0">Pusat Grosir & Eceran Sembako Terlengkap</p>
+            <p class="text-muted small">Jl. Tuntungan, Medan | Telp: 0812-3456-7890</p>
+        </div>
+
+        <div class="receipt-font small mb-3">
+            <div class="d-flex justify-content-between">
+                <span>No. TRX: <strong>#TRX-00{{ transaksi.id_penjualan }}</strong></span>
+                <span>{{ transaksi.waktu_transaksi }}</span>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <span>Metode Bayar:</span>
+                <span class="fw-bold">{{ transaksi.metode_pembayaran }}</span>
+            </div>
+        </div>
+
+        <hr style="border-top: 2px dashed #cbd5e1;">
+
+        <div class="receipt-font mb-4">
+            <div class="d-flex justify-content-between fw-bold mb-2">
+                <span>Item Belanja</span>
+                <span>Subtotal</span>
+            </div>
+            <div class="d-flex justify-content-between mb-1">
+                <div>
+                    <div>{{ detail.nama_barang }}</div>
+                    <small class="text-muted">{{ detail.jumlah_beli }} x Rp {{ "{:,.0f}".format(detail.harga).replace(',', '.') }}</small>
+                </div>
+                <div class="fw-bold">Rp {{ "{:,.0f}".format(detail.subtotal).replace(',', '.') }}</div>
+            </div>
+        </div>
+
+        <hr style="border-top: 2px dashed #cbd5e1;">
+
+        <div class="receipt-font mb-4">
+            <div class="d-flex justify-content-between fs-6 fw-bold">
+                <span>TOTAL PEMBAYARAN:</span>
+                <span style="color: #0d9488;">Rp {{ "{:,.0f}".format(transaksi.total_harga).replace(',', '.') }}</span>
+            </div>
+        </div>
+
+        <div class="text-center text-muted small mb-4 receipt-font">
+            <p class="mb-1">*** TERIMA KASIH ATAS KUNJUNGAN ANDA ***</p>
+            <p class="mb-0">Barang yang sudah dibeli tidak dapat ditukar kembali.</p>
+        </div>
+
+        <!-- Tombol Aksi (Hilang saat dicetak) -->
+        <div class="d-grid gap-2 no-print">
+            <button onclick="window.print()" class="btn btn-dark btn-action">
+                <i class="bi bi-printer-fill me-1"></i> Cetak / Simpan PDF Struk
+            </button>
+            <a href="/kasir" class="btn btn-outline-secondary btn-action">
+                <i class="bi bi-arrow-left me-1"></i> Transaksi Baru (Kasir)
+            </a>
+            <a href="/dashboard" class="btn btn-outline-teal btn-action" style="color: #0d9488; border-color: #0d9488;">
+                <i class="bi bi-speedometer2 me-1"></i> Kembali ke Dashboard
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
