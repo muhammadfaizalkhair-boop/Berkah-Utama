@@ -1,11 +1,19 @@
 import sqlite3
 import os
+import shutil
 from flask import Flask, render_template, request, redirect, url_for, session
 from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'berkah_utama_rahasia'
-DB_NAME = 'berkah_utama.db'
+
+# Cek apakah sedang jalan di server Vercel
+if os.environ.get('VERCEL'):
+    DB_NAME = '/tmp/berkah_utama.db'
+    if not os.path.exists(DB_NAME) and os.path.exists('berkah_utama.db'):
+        shutil.copy('berkah_utama.db', DB_NAME)
+else:
+    DB_NAME = 'berkah_utama.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
@@ -48,7 +56,7 @@ def init_db():
             ('Telur Ayam 1 Papan', 'Protein', 'Papan', 45000, 5),
             ('Tepung Terigu 1kg', 'Makanan Pokok', 'Kg', 12000, 25),
             ('Indomie Goreng 1 Dus', 'Makanan Instan', 'Dus', 115000, 10),
-            ('Susu Kental Manis', 'Minuman', Kaleng := 'Kaleng', 12000, 40),
+            ('Susu Kental Manis', 'Minuman', 'Kaleng', 12000, 40),
             ('Kopi Kapal Api', 'Minuman', 'Sachet', 25000, 20),
             ('Teh Celup Sosro', 'Minuman', 'Kotak', 6000, 50),
             ('Garam Halus', 'Bumbu Dapur', 'Bungkus', 3000, 60),
