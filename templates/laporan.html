@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Berkah Utama</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -69,43 +71,74 @@
         </div>
         {% endif %}
 
-        <!-- Tabel Riwayat dengan Tombol Detail Modal -->
+        <!-- Tabel Riwayat dengan Manajemen Status Pesanan -->
         <div class="card bg-white">
             <div class="card-header bg-white p-4 border-bottom-0">
-                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history me-2" style="color: #0d9488;"></i> Riwayat Transaksi Penjualan</h5>
+                <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-clock-history me-2" style="color: #0d9488;"></i> Riwayat & Pesanan Masuk</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">ID Transaksi</th>
+                                <th class="ps-4">ID & Pembeli</th>
                                 <th>Waktu</th>
                                 <th>Total Harga</th>
-                                <th>Metode Pembayaran</th>
-                                <th class="text-center">Rincian Item</th>
-                                <th class="text-center">Aksi</th>
+                                <th>Metode Bayar</th>
+                                <th>Status Pesanan</th>
+                                <th class="text-center">Rincian</th>
+                                <th class="text-center">Proses / Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in riwayat %}
+                            {% set status = item.penjualan.status_pesanan or 'Pesanan Berhasil' %}
                             <tr>
-                                <td class="ps-4 fw-bold text-secondary">TRX-00{{ item.penjualan.id_penjualan }}</td>
-                                <td><i class="bi bi-calendar-event me-1 text-muted"></i> {{ item.penjualan.waktu_transaksi }}</td>
+                                <td class="ps-4">
+                                    <span class="fw-bold text-secondary d-block">TRX-{{ "%03d"|format(item.penjualan.id_penjualan) }}</span>
+                                    <small class="text-muted">{{ item.penjualan.nama_pembeli or 'Pelanggan Toko' }}</small>
+                                </td>
+                                <td class="small"><i class="bi bi-calendar-event me-1 text-muted"></i> {{ item.penjualan.waktu_transaksi }}</td>
                                 <td class="fw-bold text-success">Rp {{ "{:,.0f}".format(item.penjualan.total_harga).replace(',', '.') }}</td>
                                 <td>
                                     <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{ item.penjualan.metode_pembayaran }}</span>
                                 </td>
-                                <!-- Tombol Lihat Detail (Modal) -->
+                                <td>
+                                    {% if status == 'Menunggu Pembayaran' %}
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="bi bi-hourglass-split me-1"></i> Menunggu Pembayaran</span>
+                                    {% elif status == 'Pesanan Diproses' %}
+                                        <span class="badge bg-info text-dark px-3 py-2 rounded-pill"><i class="bi bi-box-seam me-1"></i> Pesanan Diproses</span>
+                                    {% else %}
+                                        <span class="badge bg-success text-white px-3 py-2 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i> Pesanan Berhasil</span>
+                                    {% endif %}
+                                </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-outline-teal rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalDetail{{ item.penjualan.id_penjualan }}" style="color: #0d9488; border-color: #0d9488;">
-                                        <i class="bi bi-eye-fill me-1"></i> Lihat Detail
+                                        <i class="bi bi-eye-fill me-1"></i> Detail
                                     </button>
                                 </td>
                                 <td class="text-center">
-                                    <form action="/hapus_transaksi/{{ item.penjualan.id_penjualan }}" method="POST" onsubmit="return confirm('Yakin hapus transaksi ini?');" class="d-inline">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" title="Hapus"><i class="bi bi-trash-fill"></i></button>
-                                    </form>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        {% if status == 'Menunggu Pembayaran' %}
+                                        <form action="/update_status/{{ item.penjualan.id_penjualan }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="status_pesanan" value="Pesanan Diproses">
+                                            <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3" title="Konfirmasi Pembayaran & Proses">
+                                                <i class="bi bi-check2-circle me-1"></i> Proses
+                                            </button>
+                                        </form>
+                                        {% elif status == 'Pesanan Diproses' %}
+                                        <form action="/update_status/{{ item.penjualan.id_penjualan }}" method="POST" class="d-inline">
+                                            <input type="hidden" name="status_pesanan" value="Pesanan Berhasil">
+                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-3" title="Tandai Pesanan Selesai">
+                                                <i class="bi bi-check-all me-1"></i> Berhasil
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                        <form action="/hapus_transaksi/{{ item.penjualan.id_penjualan }}" method="POST" onsubmit="return confirm('Yakin hapus transaksi ini?');" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" title="Hapus"><i class="bi bi-trash-fill"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -114,11 +147,16 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content border-0 shadow">
                                         <div class="modal-header bg-light">
-                                            <h5 class="modal-title fw-bold">Rincian Transaksi #TRX-00{{ item.penjualan.id_penjualan }}</h5>
+                                            <h5 class="modal-title fw-bold">Rincian Transaksi #TRX-{{ "%03d"|format(item.penjualan.id_penjualan) }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body p-4">
-                                            <p class="text-muted small mb-3">Waktu: {{ item.penjualan.waktu_transaksi }} | Pembayaran: <strong>{{ item.penjualan.metode_pembayaran }}</strong></p>
+                                            <div class="p-3 bg-light rounded-3 mb-3 small">
+                                                <div class="mb-1"><strong>Pemesan:</strong> {{ item.penjualan.nama_pembeli or 'Pelanggan Toko' }}</div>
+                                                <div class="mb-1"><strong>No. WhatsApp:</strong> {{ item.penjualan.no_hp or '-' }}</div>
+                                                <div class="mb-1"><strong>Alamat:</strong> {{ item.penjualan.alamat_pembeli or 'Belanja di Toko' }}</div>
+                                                <div class="mb-0"><strong>Waktu & Metode:</strong> {{ item.penjualan.waktu_transaksi }} | {{ item.penjualan.metode_pembayaran }}</div>
+                                            </div>
                                             <ul class="list-group mb-3">
                                                 {% for d in item.details %}
                                                 <li class="list-group-item d-flex justify-content-between align-items-center py-3">
@@ -136,6 +174,7 @@
                                             </div>
                                         </div>
                                         <div class="modal-footer bg-light">
+                                            <a href="/struk/{{ item.penjualan.id_penjualan }}" class="btn btn-outline-dark rounded-pill px-3 btn-sm"><i class="bi bi-printer-fill me-1"></i> Cetak Struk</a>
                                             <button type="button" class="btn btn-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">Tutup</button>
                                         </div>
                                     </div>
@@ -143,7 +182,7 @@
                             </div>
                             {% else %}
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">Belum ada transaksi terekam.</td>
+                                <td colspan="7" class="text-center py-4 text-muted">Belum ada transaksi terekam.</td>
                             </tr>
                             {% endfor %}
                         </tbody>
