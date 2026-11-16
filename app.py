@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import shutil
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from functools import wraps
 
 app = Flask(__name__)
@@ -21,8 +21,9 @@ def get_db_connection():
     return conn
 
 def init_db():
-    if not os.path.exists(DB_NAME):
-        conn = get_db_connection()
+    is_new = not os.path.exists(DB_NAME)
+    conn = get_db_connection()
+    if is_new:
         # Tabel barang dengan Kategori & Satuan
         conn.execute('''CREATE TABLE barang (
             id_barang INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,7 +37,11 @@ def init_db():
             id_penjualan INTEGER PRIMARY KEY AUTOINCREMENT,
             waktu_transaksi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             total_harga INTEGER NOT NULL,
-            metode_pembayaran TEXT NOT NULL
+            metode_pembayaran TEXT NOT NULL,
+            status_pesanan TEXT DEFAULT 'Pesanan Berhasil',
+            nama_pembeli TEXT DEFAULT 'Pelanggan Toko',
+            no_hp TEXT DEFAULT '-',
+            alamat_pembeli TEXT DEFAULT 'Belanja di Toko'
         )''')
         conn.execute('''CREATE TABLE detail_penjualan (
             id_detail INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,7 +75,19 @@ def init_db():
             conn.execute('INSERT INTO barang (nama_barang, kategori, satuan, harga, stok) VALUES (?, ?, ?, ?, ?)', 
                          (item[0], item[1], item[2], item[3], item[4]))
         conn.commit()
-        conn.close()
+    else:
+        # Migrasi otomatis jika berkah_utama.db lama sudah ada
+        kolom_ada = [row[1] for row in conn.execute("PRAGMA table_info(penjualan)").fetchall()]
+        if 'status_pesanan' not in kolom_ada:
+            conn.execute("ALTER TABLE penjualan ADD COLUMN status_pesanan TEXT DEFAULT 'Pesanan Berhasil'")
+        if 'nama_pembeli' not in kolom_ada:
+            conn.execute("ALTER TABLE penjualan ADD COLUMN nama_pembeli TEXT DEFAULT 'Pelanggan Toko'")
+        if 'no_hp' not in kolom_ada:
+            conn.execute("ALTER TABLE penjualan ADD COLUMN no_hp TEXT DEFAULT '-'")
+        if 'alamat_pembeli' not in kolom_ada:
+            conn.execute("ALTER TABLE penjualan ADD COLUMN alamat_pembeli TEXT DEFAULT 'Belanja di Toko'")
+        conn.commit()
+    conn.close()
 
 with app.app_context():
     init_db()
@@ -89,6 +106,96 @@ def index():
     barang_list = conn.execute('SELECT * FROM barang WHERE stok > 0').fetchall()
     conn.close()
     return render_template('index.html', barang=barang_list)
+
+@app.route('/api/checkout', methods=['POST'])
+def api_checkout():
+    data = request.get_json()
+    nama = data.get('nama', 'Pelanggan Online')
+    phone = data.get('phone', '-')
+    alamat = data.get('alamat', '-')
+    metode = data.get('metode', 'QRIS')
+    items = data.get('items', [])
+    total = int(data.get('total', 0))
+
+    if not items:
+        return jsonify({'status': 'error', 'message': 'Keranjang belanja masih kosong!'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    status_awal = 'Pesanan Diproses' if metode == 'COD (Bayar di Tempat)' else 'Menunggu Pembayaran'
+    metode_label = f"Online - {metode}"
+
+    cursor.execute('''
+        INSERT INTO penjualan (total_harga, metode_pembayaran, status_pesanan, nama_pembeli, no_hp, alamat_pembeli)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ''', (total, metode_label, status_awal, nama, phone, alamat))
+    
+    id_penjualan = cursor.lastrowid
+    kode_trx = f"TRX-{id_penjualan:03d}"
+
+    for item in items:
+        barang_db = cursor.execute('SELECT id_barang, stok FROM barang WHERE nama_barang = ?', (item['nama'],)).fetchone()
+        if barang_db:
+            id_barang = barang_db['id_barang']
+            jumlah_beli = int(item['jumlah'])
+            subtotal = int(item['harga']) * jumlah_beli
+            cursor.execute('''
+                INSERT INTO detail_penjualan (id_penjualan, id_barang, jumlah_beli, subtotal)
+                VALUES (?, ?, ?, ?)
+            ''', (id_penjualan, id_barang, jumlah_beli, subtotal))
+            cursor.execute('UPDATE barang SET stok = MAX(0, stok - ?) WHERE id_barang = ?', (jumlah_beli, id_barang))
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'status': 'success',
+        'id_penjualan': id_penjualan,
+        'kode_trx': kode_trx,
+        'status_pesanan': status_awal
+    })
+
+@app.route('/api/lacak/<kode>')
+def api_lacak(kode):
+    clean_kode = kode.strip().upper().replace('TRX-', '')
+    conn = get_db_connection()
+    transaksi = None
+
+    if clean_kode.isdigit():
+        transaksi = conn.execute('SELECT * FROM penjualan WHERE id_penjualan = ?', (int(clean_kode),)).fetchone()
+    
+    if not transaksi:
+        transaksi = conn.execute('SELECT * FROM penjualan WHERE no_hp = ? ORDER BY id_penjualan DESC LIMIT 1', (kode.strip(),)).fetchone()
+
+    if not transaksi:
+        conn.close()
+        return jsonify({'status': 'not_found', 'message': 'Pesanan tidak ditemukan. Periksa kembali Nomor Pesanan atau No. WhatsApp Anda.'}), 404
+
+    details = conn.execute('''
+        SELECT d.jumlah_beli, d.subtotal, b.nama_barang, b.satuan
+        FROM detail_penjualan d
+        JOIN barang b ON d.id_barang = b.id_barang
+        WHERE d.id_penjualan = ?
+    ''', (transaksi['id_penjualan'],)).fetchall()
+    conn.close()
+
+    daftar_item = [
+        f"{d['nama_barang']} ({d['jumlah_beli']} {d['satuan']}) - Rp {d['subtotal']:,}".replace(',', '.')
+        for d in details
+    ]
+
+    return jsonify({
+        'status': 'success',
+        'kode_trx': f"TRX-{transaksi['id_penjualan']:03d}",
+        'nama_pembeli': transaksi['nama_pembeli'],
+        'alamat_pembeli': transaksi['alamat_pembeli'],
+        'waktu_transaksi': transaksi['waktu_transaksi'],
+        'metode_pembayaran': transaksi['metode_pembayaran'],
+        'status_pesanan': transaksi['status_pesanan'],
+        'total_harga': transaksi['total_harga'],
+        'items': daftar_item
+    })
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -111,7 +218,7 @@ def logout():
 @login_required
 def dashboard():
     conn = get_db_connection()
-    penjualan = conn.execute('SELECT * FROM penjualan ORDER BY waktu_transaksi DESC').fetchall()
+    penjualan = conn.execute('SELECT * FROM penjualan ORDER BY waktu_transaksi DESC, id_penjualan DESC').fetchall()
     total_pendapatan = conn.execute('SELECT SUM(total_harga) FROM penjualan').fetchone()[0] or 0
     barang_menipis = conn.execute('SELECT * FROM barang WHERE stok < 10').fetchall()
     
@@ -131,6 +238,16 @@ def dashboard():
         
     conn.close()
     return render_template('laporan.html', riwayat=riwayat_transaksi, total=total_pendapatan, barang_menipis=barang_menipis)
+
+@app.route('/update_status/<int:id_penjualan>', methods=['POST'])
+@login_required
+def update_status(id_penjualan):
+    status_baru = request.form['status_pesanan']
+    conn = get_db_connection()
+    conn.execute('UPDATE penjualan SET status_pesanan = ? WHERE id_penjualan = ?', (status_baru, id_penjualan))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('dashboard'))
 
 @app.route('/kasir', methods=['GET', 'POST'])
 @login_required
@@ -152,7 +269,10 @@ def kasir():
         
         if item and item['stok'] >= jumlah_beli:
             total_harga = item['harga'] * jumlah_beli
-            cursor = conn.execute('INSERT INTO penjualan (total_harga, metode_pembayaran) VALUES (?, ?)', (total_harga, metode))
+            cursor = conn.execute(
+                'INSERT INTO penjualan (total_harga, metode_pembayaran, status_pesanan, nama_pembeli, alamat_pembeli) VALUES (?, ?, ?, ?, ?)',
+                (total_harga, metode, 'Pesanan Berhasil', 'Pelanggan Kasir (Offline)', 'Belanja di Toko')
+            )
             id_penjualan = cursor.lastrowid
             conn.execute('INSERT INTO detail_penjualan (id_penjualan, id_barang, jumlah_beli, subtotal) VALUES (?, ?, ?, ?)', 
                          (id_penjualan, id_barang, jumlah_beli, total_harga))
