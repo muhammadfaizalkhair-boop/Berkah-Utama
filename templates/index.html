@@ -3,45 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Berkah Utama - Pusat Grosir Sembako</title>
+    <title>Toko Berkah Utama - Pusat Grosir & Sembako Online</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; scroll-behavior: smooth; }
         
         /* Navbar Publik */
-        .navbar-public { background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 15px 0; }
-        .brand-text { font-weight: 800; font-size: 1.5rem; color: #0d9488; text-decoration: none; }
+        .navbar-public { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 14px 0; }
+        .brand-text { font-weight: 800; font-size: 1.45rem; color: #0d9488; text-decoration: none; letter-spacing: -0.5px; }
         .btn-login { background-color: #f1f5f9; color: #475569; font-weight: 600; border-radius: 50px; padding: 8px 20px; border: none; text-decoration: none; transition: 0.3s; }
         .btn-login:hover { background-color: #e2e8f0; color: #0f172a; }
         .btn-lacak { background-color: #f0fdfa; color: #0d9488; font-weight: 600; border-radius: 50px; padding: 8px 20px; border: 1px solid #99f6e4; transition: 0.3s; }
         .btn-lacak:hover { background-color: #ccfbf1; color: #0f766e; }
 
-        /* Hero Section */
-        .hero-section { background: linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%); padding: 80px 0; border-bottom: 1px solid #99f6e4; text-align: center; }
-        .hero-title { font-weight: 800; font-size: 3rem; color: #0f172a; margin-bottom: 20px; }
-        .hero-subtitle { font-size: 1.1rem; color: #475569; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        /* Hero Banner Bergambar Modern */
+        .hero-banner {
+            background: linear-gradient(120deg, rgba(15, 23, 42, 0.85) 0%, rgba(13, 148, 136, 0.82) 100%),
+                        url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            padding: 95px 0 110px 0;
+            color: white;
+            position: relative;
+        }
+        .hero-badge { background-color: rgba(255, 255, 255, 0.18); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.3); color: #ccfbf1; font-weight: 600; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; display: inline-block; margin-bottom: 18px; }
+        .hero-title { font-weight: 800; font-size: 3.1rem; line-height: 1.15; margin-bottom: 18px; }
+        .hero-subtitle { font-size: 1.1rem; color: #e2e8f0; margin-bottom: 30px; max-width: 620px; }
+        .btn-hero-cta { background-color: #ffffff; color: #0f766e; font-weight: 700; padding: 13px 30px; border-radius: 50px; text-decoration: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-hero-cta:hover { background-color: #f0fdfa; color: #0d9488; transform: translateY(-2px); }
 
-        /* Kartu Produk */
-        .product-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; transition: 0.3s; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: #0d9488; }
-        .product-icon { font-size: 2.5rem; color: #0d9488; margin-bottom: 10px; opacity: 0.8; text-align: center; }
-        .product-name { font-weight: 700; font-size: 1.05rem; color: #1e293b; margin-bottom: 5px; }
-        .product-price { font-weight: 800; font-size: 1.2rem; color: #0d9488; margin-bottom: 15px; }
-        .badge-stock { background-color: #dcfce7; color: #166534; font-weight: 600; padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; display: inline-block; margin-bottom: 15px; }
-        .btn-add { background-color: #0d9488; color: white; border-radius: 50px; font-weight: 600; border: none; padding: 8px; transition: 0.2s; }
-        .btn-add:hover { background-color: #0f766e; color: white; }
+        /* Kartu Keunggulan Melayang */
+        .feature-strip { margin-top: -45px; position: relative; z-index: 10; }
+        .feature-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 15px; height: 100%; }
+        .feature-icon-box { width: 50px; height: 50px; border-radius: 12px; background-color: #f0fdfa; color: #0d9488; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
 
-        /* Kartu Pilihan Bank & E-Wallet (Sama seperti Kasir Admin) */
+        /* Filter Kategori & Search */
+        .filter-pill { border: 1px solid #e2e8f0; background: white; color: #475569; border-radius: 50px; padding: 7px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .filter-pill:hover, .filter-pill.active { background-color: #0d9488; color: white; border-color: #0d9488; }
+
+        /* Kartu Produk Bergambar */
+        .product-card { background: white; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; transition: 0.3s; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 18px 35px rgba(13, 148, 136, 0.14); border-color: #99f6e4; }
+        .product-img-wrap { position: relative; width: 100%; height: 185px; background-color: #f1f5f9; overflow: hidden; }
+        .product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .product-card:hover .product-img-wrap img { transform: scale(1.07); }
+        .category-tag { position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(4px); color: white; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 50px; }
+        .stock-tag { position: absolute; bottom: 10px; right: 10px; background: #dcfce7; color: #166534; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 50px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .product-body { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-name { font-weight: 700; font-size: 1.05rem; color: #1e293b; margin-bottom: 6px; }
+        .product-price { font-weight: 800; font-size: 1.25rem; color: #0d9488; margin-bottom: 14px; }
+        .btn-add { background: linear-gradient(135deg, #0d9488, #0f766e); color: white; border-radius: 50px; font-weight: 600; border: none; padding: 10px; transition: 0.2s; }
+        .btn-add:hover { background: linear-gradient(135deg, #0f766e, #115e59); color: white; transform: scale(1.02); }
+
+        /* Kartu Pilihan Bank & E-Wallet */
         .bank-label, .wallet-label { border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; transition: 0.2s; background: white; padding: 10px 4px; text-align: center; height: 100%; }
         .btn-check:checked + .bank-label, .btn-check:checked + .wallet-label { border-color: #0d9488; background-color: #f0fdfa; transform: scale(1.03); box-shadow: 0 4px 10px rgba(13, 148, 136, 0.15); }
 
         /* Floating Cart Button */
-        .floating-cart { position: fixed; bottom: 30px; right: 30px; background-color: #0d9488; color: white; border-radius: 50px; padding: 12px 25px; box-shadow: 0 10px 25px rgba(13, 148, 136, 0.4); z-index: 1000; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; border: none; transition: 0.3s; }
-        .floating-cart:hover { background-color: #0f766e; transform: scale(1.05); }
+        .floating-cart { position: fixed; bottom: 28px; right: 28px; background: linear-gradient(135deg, #0d9488, #0f766e); color: white; border-radius: 50px; padding: 14px 26px; box-shadow: 0 12px 28px rgba(13, 148, 136, 0.45); z-index: 1000; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px; border: 2px solid rgba(255,255,255,0.2); transition: 0.3s; }
+        .floating-cart:hover { transform: scale(1.06); color: white; }
 
-        .footer { background-color: #0f172a; color: #94a3b8; padding: 40px 0; text-align: center; margin-top: 80px; }
+        /* Toast Notifikasi Keranjang */
+        .toast-cart { position: fixed; bottom: 92px; right: 28px; background-color: #0f172a; color: white; padding: 12px 20px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 1050; display: none; align-items: center; gap: 10px; }
+
+        .footer { background-color: #0f172a; color: #94a3b8; padding: 50px 0 35px 0; margin-top: 90px; }
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.1rem; }
+            .hero-banner { padding: 65px 0 85px 0; }
+        }
     </style>
 </head>
 <body>
@@ -52,38 +81,110 @@
             <a class="brand-text" href="/"><i class="bi bi-shop me-2"></i>Toko Berkah Utama</a>
             <div class="ms-auto d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-lacak" data-bs-toggle="modal" data-bs-target="#modalLacak">
-                    <i class="bi bi-search me-1"></i> Lacak Pesanan
+                    <i class="bi bi-truck me-1"></i> Lacak Pesanan
                 </button>
                 <a href="/login" class="btn btn-login"><i class="bi bi-person-lock me-1"></i> Login Admin</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Hero Banner Bergambar -->
+    <section class="hero-banner">
         <div class="container">
-            <h1 class="hero-title">Pusat Grosir Sembako <span style="color: #0d9488;">Termurah & Terlengkap</span></h1>
-            <p class="hero-subtitle">Pilih kebutuhan pokok Anda langsung dari katalog di bawah, masukkan ke keranjang, dan pesan dengan mudah!</p>
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <span class="hero-badge"><i class="bi bi-stars me-1"></i> Grosir & Eceran Sembako Terpercaya</span>
+                    <h1 class="hero-title">Belanja Kebutuhan Pokok Lebih Hemat & Praktis</h1>
+                    <p class="hero-subtitle">Tersedia beras premium, minyak goreng, telur segar, hingga kebutuhan dapur harian dengan harga grosir langsung diantar ke rumah Anda.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#katalog-produk" class="btn-hero-cta">
+                            <i class="bi bi-bag-heart-fill"></i> Belanja Sekarang
+                        </a>
+                        <button type="button" class="btn btn-outline-light rounded-pill px-4 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalLacak">
+                            Cek Status Pengiriman
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Katalog Produk Interaktif -->
-    <section class="container" style="margin-top: 50px;">
-        <h3 class="fw-bold mb-4 text-dark"><i class="bi bi-grid-fill me-2" style="color: #0d9488;"></i> Katalog Produk Tersedia</h3>
-        <div class="row g-4">
-            {% for b in barang %}
-            <div class="col-lg-3 col-md-4 col-sm-6">
-                <div class="product-card">
+    <!-- Strip Keunggulan Toko -->
+    <section class="container feature-strip">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box"><i class="bi bi-tags-fill"></i></div>
                     <div>
-                        <div class="product-icon"><i class="bi bi-basket2-fill"></i></div>
-                        <div class="text-muted small mb-1">{{ b.kategori }}</div>
-                        <h6 class="product-name">{{ b.nama_barang }}</h6>
-                        <div class="product-price">Rp {{ "{:,.0f}".format(b.harga).replace(',', '.') }}</div>
-                        <span class="badge-stock"><i class="bi bi-check-circle-fill me-1"></i> Stok: {{ b.stok }} {{ b.satuan }}</span>
+                        <h6 class="fw-bold mb-1">Harga Grosir Bersahabat</h6>
+                        <p class="text-muted small mb-0">Stok langsung dari distributor utama dengan harga jujur.</p>
                     </div>
-                    <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}', {{ b.stok }})" class="btn btn-add w-100">
-                        <i class="bi bi-cart-plus-fill me-1"></i> Pilih Produk
-                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Pesanan Diproses Cepat</h6>
+                        <p class="text-muted small mb-0">Pesanan masuk otomatis ke sistem dan langsung disiapkan.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box"><i class="bi bi-shield-check"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Pembayaran Fleksibel</h6>
+                        <p class="text-muted small mb-0">Mendukung QRIS instan, Transfer Bank, E-Wallet, & COD.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Katalog Produk Bergambar & Filter -->
+    <section id="katalog-produk" class="container" style="margin-top: 55px;">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <h3 class="fw-bold mb-1 text-dark"><i class="bi bi-grid-fill me-2" style="color: #0d9488;"></i> Katalog Produk Sembako</h3>
+                <p class="text-muted small mb-0">Pilih produk berkualitas yang siap dikirim hari ini</p>
+            </div>
+            <div class="input-group" style="max-width: 320px;">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchProduk" class="form-control border-start-0 ps-0" placeholder="Cari beras, minyak, gula..." onkeyup="filterProduk()">
+            </div>
+        </div>
+
+        <!-- Tombol Filter Kategori -->
+        <div class="d-flex flex-wrap gap-2 mb-4" id="categoryFilterBar">
+            <button type="button" class="filter-pill active" onclick="setKategori('ALL', this)">Semua Produk</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Makanan Pokok', this)">Makanan Pokok</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Sembako', this)">Sembako</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Protein', this)">Protein</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Makanan Instan', this)">Makanan Instan</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Minuman', this)">Minuman</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Bumbu Dapur', this)">Bumbu Dapur</button>
+            <button type="button" class="filter-pill" onclick="setKategori('Pembersih', this)">Pembersih</button>
+        </div>
+
+        <div class="row g-4" id="gridProduk">
+            {% for b in barang %}
+            <div class="col-lg-3 col-md-4 col-sm-6 product-item-col" data-nama="{{ b.nama_barang|lower }}" data-kategori="{{ b.kategori }}">
+                <div class="product-card">
+                    <div class="product-img-wrap">
+                        <span class="category-tag">{{ b.kategori }}</span>
+                        <img src="" alt="{{ b.nama_barang }}" class="auto-product-img" data-name="{{ b.nama_barang }}" data-cat="{{ b.kategori }}">
+                        <span class="stock-tag"><i class="bi bi-check-circle-fill me-1"></i> Stok: {{ b.stok }} {{ b.satuan }}</span>
+                    </div>
+                    <div class="product-body">
+                        <div>
+                            <h6 class="product-name">{{ b.nama_barang }}</h6>
+                            <div class="product-price">Rp {{ "{:,.0f}".format(b.harga).replace(',', '.') }} <small class="text-muted fw-normal fs-6">/ {{ b.satuan }}</small></div>
+                        </div>
+                        <button onclick="tambahKeKeranjang('{{ b.nama_barang }}', {{ b.harga }}, '{{ b.satuan }}', {{ b.stok }})" class="btn btn-add w-100">
+                            <i class="bi bi-cart-plus-fill me-1"></i> Tambah ke Keranjang
+                        </button>
+                    </div>
                 </div>
             </div>
             {% else %}
@@ -93,6 +194,12 @@
             {% endfor %}
         </div>
     </section>
+
+    <!-- Notifikasi Toast Cepat -->
+    <div id="toastCart" class="toast-cart">
+        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+        <span id="toastCartMsg">Produk ditambahkan!</span>
+    </div>
 
     <!-- Tombol Mengambang Keranjang Belanja -->
     <button class="floating-cart" data-bs-toggle="modal" data-bs-target="#modalKeranjang">
@@ -140,7 +247,7 @@
                             </select>
                         </div>
 
-                        <!-- Box Pilihan Transfer Bank (Lengkap seperti Admin) -->
+                        <!-- Box Pilihan Transfer Bank -->
                         <div id="custBoxTransfer" class="mb-4" style="display: none;">
                             <label class="fw-bold mb-2 text-secondary small">Pilih Tujuan Bank:</label>
                             <div class="row g-2">
@@ -189,7 +296,7 @@
                             </div>
                         </div>
 
-                        <!-- Box Pilihan E-Wallet (Lengkap seperti Admin) -->
+                        <!-- Box Pilihan E-Wallet -->
                         <div id="custBoxWallet" class="mb-4" style="display: none;">
                             <label class="fw-bold mb-2 text-secondary small">Pilih E-Wallet:</label>
                             <div class="row g-2 justify-content-center">
@@ -299,22 +406,95 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <h5 class="fw-bold text-white mb-2"><i class="bi bi-shop me-2"></i>Toko Berkah Utama</h5>
-            <p class="small mb-0">© 2026 Hak Cipta Dilindungi. Sistem Informasi Manajemen Sembako.</p>
+            <div class="row gy-4 align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <h5 class="fw-bold text-white mb-2"><i class="bi bi-shop me-2" style="color: #2dd4bf;"></i>Toko Berkah Utama</h5>
+                    <p class="small mb-0">Pusat grosir dan eceran kebutuhan pokok harian terpercaya. Melayani pesanan online dan pembelian langsung di toko.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <p class="small text-white mb-1"><i class="bi bi-whatsapp me-1 text-success"></i> Layanan Pelanggan: 0851-1132-7042</p>
+                    <p class="small mb-0">© 2026 Hak Cipta Dilindungi. Sistem Informasi Manajemen Sembako.</p>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- Skrip Keranjang Belanja, Checkout Otomatis, & Lacak Pesanan -->
+    <!-- Skrip Gambar Otomatis, Filter, Keranjang, Checkout, & Lacak -->
     <script>
+        // Pemetaan Foto Produk Otomatis berdasarkan Nama Barang / Kategori
+        function getProductImage(nama, kategori) {
+            const n = nama.toLowerCase();
+            if (n.includes('beras')) return 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('minyak')) return 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('gula')) return 'https://images.unsplash.com/photo-1581441363689-1f3c3c414635?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('telur')) return 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('tepung')) return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('indomie') || n.includes('mie')) return 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('susu')) return 'https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('kopi')) return 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('teh')) return 'https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('garam')) return 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('margarin') || n.includes('mentega')) return 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('kecap')) return 'https://images.unsplash.com/photo-1626200419199-391ae4be7a41?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('saus') || n.includes('sambal')) return 'https://images.unsplash.com/photo-1472476443507-c7a5948772fc?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('sarden') || n.includes('ikan')) return 'https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=600&q=80';
+            if (n.includes('sabun') || n.includes('sunlight') || n.includes('cuci')) return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80';
+
+            // Fallback berdasarkan kategori
+            const k = (kategori || '').toLowerCase();
+            if (k.includes('minuman')) return 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=600&q=80';
+            if (k.includes('bumbu')) return 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80';
+            if (k.includes('pembersih')) return 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80';
+            return 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.auto-product-img').forEach(img => {
+                const nama = img.getAttribute('data-name');
+                const cat = img.getAttribute('data-cat');
+                img.src = getProductImage(nama, cat);
+                img.onerror = function() {
+                    this.src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
+                };
+            });
+        });
+
+        // Filter Pencarian & Kategori
+        let selectedKategori = 'ALL';
+        function setKategori(kat, btn) {
+            selectedKategori = kat;
+            document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+            filterProduk();
+        }
+
+        function filterProduk() {
+            const keyword = document.getElementById('searchProduk').value.toLowerCase();
+            document.querySelectorAll('.product-item-col').forEach(col => {
+                const nama = col.getAttribute('data-nama');
+                const kat = col.getAttribute('data-kategori');
+                const matchNama = nama.includes(keyword);
+                const matchKat = (selectedKategori === 'ALL' || kat === selectedKategori);
+                col.style.display = (matchNama && matchKat) ? 'block' : 'none';
+            });
+        }
+
         let keranjang = [];
+        let toastTimer = null;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastCart');
+            document.getElementById('toastCartMsg').textContent = msg;
+            toast.style.display = 'flex';
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
 
         // Tampilkan pilihan Bank / E-Wallet sesuai metode yang dipilih
         document.getElementById('paymentMethod').addEventListener('change', function() {
             const val = this.value;
             document.getElementById('custBoxTransfer').style.display = (val === 'Transfer Bank') ? 'block' : 'none';
             document.getElementById('custBoxWallet').style.display = (val === 'E-Wallet') ? 'block' : 'none';
-
-            // Reset radio pilihan saat ganti kategori utama
             document.querySelectorAll('input[name="cust_channel"]').forEach(r => r.checked = false);
         });
 
@@ -331,7 +511,7 @@
                 keranjang.push({ nama: nama, harga: harga, satuan: satuan, jumlah: 1, maxStok: maxStok });
             }
             updateCartUI();
-            alert(nama + ' berhasil ditambahkan ke keranjang!');
+            showToast(nama + ' masuk ke keranjang!');
         }
 
         function ubahJumlah(index, delta) {
@@ -445,12 +625,10 @@
                 let kodeTrx = result.kode_trx;
                 let statusPesanan = result.status_pesanan;
 
-                // Tutup modal keranjang
                 let modalKeranjangEl = document.getElementById('modalKeranjang');
                 let modalKeranjang = bootstrap.Modal.getInstance(modalKeranjangEl);
                 if (modalKeranjang) modalKeranjang.hide();
 
-                // Siapkan Modal Pembayaran Dinamis
                 document.getElementById('payKodeTrx').textContent = kodeTrx;
                 document.getElementById('payTotalNominal').textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
                 document.getElementById('payStatusBadge').textContent = 'Status: ' + statusPesanan;
@@ -499,7 +677,6 @@
                     `;
                 }
 
-                // Susun pesan WhatsApp bersih tanpa emoji
                 let pesan = `Halo Admin Toko Berkah Utama, saya ingin konfirmasi pesanan:\n\n`;
                 pesan += `- *No. Pesanan:* ${kodeTrx}\n`;
                 pesan += `- *Nama:* ${name}\n`;
@@ -521,7 +698,6 @@
                     window.open(`https://api.whatsapp.com/send?phone=${noWaToko}&text=${encodedMessage}`, '_blank');
                 };
 
-                // Kosongkan keranjang & tampilkan Modal Pembayaran
                 keranjang = [];
                 updateCartUI();
                 document.getElementById('checkoutForm').reset();
